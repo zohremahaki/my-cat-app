@@ -1,23 +1,23 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+
 export const fetchCategories = createAsyncThunk(
   "categories/fetchCategories",
   async () => {
     const res = await fetch("https://api.thecatapi.com/v1/categories");
-    const data = await res.json();
-    return data;
+    return await res.json();
   }
 );
+
 const initialState = {
-  categories: [],
+  items: [],
   status: "initial",
   error: null,
 };
+
 const categoriesSlice = createSlice({
-  name: "categories",
+  name: "categories", // 🔹 اینجا درست شد
   initialState,
-  reducers: {
-    // showCats: () => {},
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(fetchCategories.pending, (state) => {
@@ -25,13 +25,13 @@ const categoriesSlice = createSlice({
       })
       .addCase(fetchCategories.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.categories = action.payload;
+        state.items = action.payload; // 🔹 اینجا درست شد
       })
       .addCase(fetchCategories.rejected, (state, action) => {
-        state.status = "faild";
+        state.status = "failed"; // 🔹 املای failed درست شد
         state.error = action.error.message;
       });
   },
 });
-// export const { showCats } = categoriesSlice.actions;
+
 export default categoriesSlice.reducer;

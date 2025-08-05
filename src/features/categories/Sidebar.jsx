@@ -22,21 +22,24 @@ const CategoryItem = styled.div`
 
 const Sidebar = ({ selectedCategory, onCategorySelect }) => {
   const dispatch = useDispatch();
-  const { categories, status, error } = useSelector(
-    (state) => state.categories
-  );
+  const { items, status, error } = useSelector((state) => state.categories);
+
   useEffect(() => {
-    if (status === "initial") {
-      dispatch(fetchCategories);
-    }
-  }, [status, dispatch]);
+    dispatch(fetchCategories());
+  }, [dispatch]);
+
+  // useEffect(() => {
+  //   if (status === "initial") {
+  //     dispatch(fetchCategories);
+  //   }
+  // }, [status, dispatch]);
 
   if (status === "loading")
     return <SidebarWrapper>در حال بارگذاری...</SidebarWrapper>;
   if (status === "failed") return <SidebarWrapper>خطا: {error}</SidebarWrapper>;
   return (
     <SidebarWrapper>
-      {categories.map((cat) => (
+      {items.map((cat) => (
         <CategoryItem
           key={cat.id}
           active={selectedCategory === cat.id}
