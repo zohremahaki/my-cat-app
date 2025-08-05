@@ -10,14 +10,19 @@ export const fetchCategories = createAsyncThunk(
 
 const initialState = {
   items: [],
+  selectedCategory: null, // 🔹 اضافه شد
   status: "initial",
   error: null,
 };
 
 const categoriesSlice = createSlice({
-  name: "categories", // 🔹 اینجا درست شد
+  name: "categories", // درست
   initialState,
-  reducers: {},
+  reducers: {
+    setSelectedCategory: (state, action) => {
+      state.selectedCategory = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchCategories.pending, (state) => {
@@ -25,13 +30,14 @@ const categoriesSlice = createSlice({
       })
       .addCase(fetchCategories.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.items = action.payload; // 🔹 اینجا درست شد
+        state.items = action.payload;
       })
       .addCase(fetchCategories.rejected, (state, action) => {
-        state.status = "failed"; // 🔹 املای failed درست شد
+        state.status = "failed"; // درست شد
         state.error = action.error.message;
       });
   },
 });
 
+export const { setSelectedCategory } = categoriesSlice.actions;
 export default categoriesSlice.reducer;

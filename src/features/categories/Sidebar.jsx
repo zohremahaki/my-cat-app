@@ -11,39 +11,36 @@ const SidebarWrapper = styled.div`
 `;
 const CategoryItem = styled.div`
   padding: 0.5rem;
-  cursor:pointer;
-  border-radius:5px;
-  margin-bottom:0.5rem;
-  background: ${(props) => (props.active ? "#ccc" : "transparent")}
-  &:hover{
-    background:#ddd
-}
+  cursor: pointer;
+  border-radius: 5px;
+  margin-bottom: 0.5rem;
+  background: ${(props) => (props.active ? "#ccc" : "transparent")};
+  &:hover {
+    background: #ddd;
+  }
 `;
 
 const Sidebar = ({ selectedCategory, onCategorySelect }) => {
   const dispatch = useDispatch();
+  // گرفتن categories از ریداکس
   const { items, status, error } = useSelector((state) => state.categories);
 
   useEffect(() => {
+    // وقتی کامپوننت لود شد، دسته‌بندی‌ها رو از API بگیریم
     dispatch(fetchCategories());
   }, [dispatch]);
-
-  // useEffect(() => {
-  //   if (status === "initial") {
-  //     dispatch(fetchCategories);
-  //   }
-  // }, [status, dispatch]);
 
   if (status === "loading")
     return <SidebarWrapper>در حال بارگذاری...</SidebarWrapper>;
   if (status === "failed") return <SidebarWrapper>خطا: {error}</SidebarWrapper>;
+
   return (
     <SidebarWrapper>
       {items.map((cat) => (
         <CategoryItem
           key={cat.id}
           active={selectedCategory === cat.id}
-          onClick={() => onCategorySelect(cat.id)}
+          onClick={() => onCategorySelect(cat.id)} // وقتی کلیک شد، دسته انتخابی رو ست کن
         >
           {cat.name}
         </CategoryItem>

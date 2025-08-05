@@ -1,14 +1,61 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import styled from "styled-components";
+import { setSelectedCategory } from "./features/categories/CategoriesSlice";
+
 import Sidebar from "./features/categories/Sidebar";
 import { clearCats, fetchCats } from "./features/cats/CatsSlice";
+
+const AppWrapper = styled.div`
+  display: flex;
+  height: 100vh;
+`;
+
+const GalleryWrapper = styled.div`
+  flex: 1;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+`;
+
+const ImagesGrid = styled.div`
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  overflow-y: auto;
+`;
+
+const CatImage = styled.img`
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+`;
+
+const LoadMoreButton = styled.button`
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  align-self: center;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  &:hover {
+    background-color: #45a049;
+  }
+  &:disabled {
+    background-color: #a5d6a7;
+    cursor: not-allowed;
+  }
+`;
 
 function App() {
   const dispatch = useDispatch();
   const { items: cats, status, error } = useSelector((state) => state.cats);
   const { selectedCategory } = useSelector((state) => state.categories);
 
-  // وقتی دسته‌بندی تغییر می‌کنه، عکس‌های جدید بیاد
   useEffect(() => {
     if (selectedCategory) {
       dispatch(clearCats());
@@ -21,54 +68,33 @@ function App() {
   };
 
   return (
-    <div style={{ display: "flex" }}>
-      {/* سایدبار دسته‌بندی‌ها */}
-      <Sidebar />
-
-      {/* بخش اصلی نمایش عکس‌ها */}
-      <div style={{ flex: 1, padding: "1rem" }}>
+    <AppWrapper>
+      <Sidebar
+        selectedCategory={selectedCategory}
+        onCategorySelect={(id) => dispatch(setSelectedCategory(id))}
+      />
+      <GalleryWrapper>
         <h1>🐱 Cat Gallery</h1>
 
-        {status === "loading" && <p>در حال بارگذاری...</p>}
+        {status === "loading" && cats.length === 0 && <p>در حال بارگذاری...</p>}
         {status === "failed" && <p style={{ color: "red" }}>{error}</p>}
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
-            gap: "1rem",
-          }}
-        >
+        <ImagesGrid>
           {cats.map((cat) => (
-            <img
-              key={cat.id}
-              src={cat.url}
-              alt="Cat"
-              style={{
-                width: "100%",
-                height: "200px",
-                objectFit: "cover",
-                borderRadius: "8px",
-              }}
-            />
+            <CatImage key={cat.id} src={cat.url} alt="Cat" />
           ))}
-        </div>
+        </ImagesGrid>
 
         {cats.length > 0 && (
-          <button
+          <LoadMoreButton
             onClick={handleLoadMore}
-            style={{
-              marginTop: "1rem",
-              padding: "0.5rem 1rem",
-              borderRadius: "6px",
-              cursor: "pointer",
-            }}
+            disabled={status === "loading"}
           >
-            Load More
-          </button>
+            {status === "loading" ? "در حال بارگذاری..." : "Load More"}
+          </LoadMoreButton>
         )}
-      </div>
-    </div>
+      </GalleryWrapper>
+    </AppWrapper>
   );
 }
 
